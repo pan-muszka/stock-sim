@@ -1,20 +1,37 @@
-package com.panmuszka.stocksim.util;
+package com.panmuszka.stocksim.data;
+
+import jakarta.persistence.*;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+@Entity
 public class User {
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
     private String username;
     private BigDecimal balance;
+
+    @OneToOne
     private Portfolio portfolio;
 
-    public User(long id, String username, BigDecimal balance) {
+    @OneToMany
+    private List<Transaction> transactions;
+
+    public interface UserRepository extends JpaRepository<User, Long> { }
+
+    public User(long id, String username, BigDecimal balance, long portfolioId) {
         this.id = id;
         this.username = username;
         this.balance = balance;
 
-        this.portfolio = new Portfolio();
+        this.portfolio = new Portfolio(portfolioId, this);
     }
+
+    public User() { }
 
     public long getId() {
         return id;
